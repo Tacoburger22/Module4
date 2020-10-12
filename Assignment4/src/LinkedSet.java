@@ -37,25 +37,13 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
         size = 0;
     }
 
-    public static void main(String[] args) {
+    /**public static void main(String[] args) {
         LinkedSet mySet = new LinkedSet();
-        for (int i = 0; i < 100; i++) {
-            mySet.add(i);
-        }
-        System.out.println("My set: " + mySet);
-        for (int i = 0; i < 99; i++) {
-            mySet.remove(i);
-        }
-        mySet.remove(99);
-        System.out.println("My set: " + mySet);
-        mySet.add(null);
-        String emptySetString = mySet.toString();
-        mySet.add(0);
         mySet.add(1);
-        mySet.add(3);
         mySet.add(2);
-        mySet.add(4);
-        mySet.add(-1);
+        mySet.add(3);
+        //mySet.add(7);
+        //mySet.add(-1);
         if (mySet.contains(11)) {
             System.out.println("Found it!");
             System.out.println(mySet.toString());
@@ -63,12 +51,12 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
             System.out.println("Didn't find it!");
         }
         LinkedSet mySecondSet = new LinkedSet();
-        mySecondSet.add(5);
-        mySecondSet.add(6);
-        mySecondSet.add(7);
-        mySecondSet.add(2);
+        //mySecondSet.add(2);
+        //mySecondSet.add(6);
         mySecondSet.add(3);
-        mySecondSet.add(-2);
+        mySecondSet.add(4);
+        mySecondSet.add(2);
+        //mySecondSet.add(-2);
         if (mySet.equals(mySecondSet)) {
             System.out.println("Hooray!");
         }
@@ -80,7 +68,7 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
         System.out.println("My intersection set: " + intersectionSet);
         LinkedSet complementSet = (LinkedSet) mySet.complement(mySecondSet);
         System.out.println("My complement set: " + complementSet);
-    }
+    }*/
 
     //////////////////////////////////////////////////
     // Public interface and class-specific methods. //
@@ -323,12 +311,115 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
         if (this.isEmpty()) {
             return s;
         }
-        for (T setItem : s) {
-            newSet.add(setItem);
+        Node n = this.front;
+        Node p = s.front;
+        boolean done = false;
+        if (n.element.compareTo(p.element) < 0) {
+            Node q = new Node();
+            q.element = n.element;
+            newSet.front = q;
+            newSet.rear = q;
+            newSet.size++;
+            n = n.next;
+        } else if (n.element.equals(p.element)) {
+            Node q = new Node();
+            q.element = n.element;
+            newSet.front = q;
+            newSet.rear = q;
+            newSet.size++;
+            n = n.next;
+            p = p.next;
+        } else {
+            Node r = new Node(p.element);
+            r.element = p.element;
+            newSet.front = r;
+            newSet.rear = r;
+            newSet.size++;
+            p = p.next;
         }
-        for (T thisItem : this) {
-            newSet.add(thisItem);
+        while (!done) {
+            if (n != null) {
+                if (p == null) {
+                    do {
+                        Node o = new Node();
+                        o.element = n.element;
+                        o.prev = newSet.rear;
+                        newSet.rear.next = o;
+                        newSet.rear = o;
+                        newSet.size++;
+                        n = n.next;
+                        o = null;
+                    } while (n != null && this.iterator().hasNext());
+                    break;
+                }
+                if (n.element.compareTo(p.element) < 0) {
+                    Node t = new Node();
+                    t.element = n.element;
+                    t.prev = newSet.rear;
+                    newSet.rear.next = t;
+                    newSet.rear = t;
+                    newSet.size++;
+                    n = n.next;
+                    t = null;
+                }
+                if (p != null && n!= null && p.element.equals(n.element)) {
+                    Node t = new Node();
+                    t.element = n.element;
+                    t.prev = newSet.rear;
+                    newSet.rear.next = t;
+                    newSet.rear = t;
+                    newSet.size++;
+                    n = n.next;
+                    p = p.next;
+                    t = null;
+                }
+            }
+            if (p != null) {
+                if (n == null) {
+                    do {
+                        Node o = new Node();
+                        o.element = p.element;
+                        o.prev = newSet.rear;
+                        newSet.rear.next = o;
+                        newSet.rear = o;
+                        newSet.size++;
+                        p = p.next;
+                        o = null;
+                    } while (p != null && s.iterator().hasNext());
+                    break;
+                }
+                if (p.element.compareTo(n.element) < 0) {
+                    Node t = new Node();
+                    t.element = p.element;
+                    t.prev = newSet.rear;
+                    newSet.rear.next = t;
+                    newSet.rear = t;
+                    newSet.size++;
+                    p = p.next;
+                    t = null;
+                }
+                if (n != null && p != null && n.element.equals(p.element)) {
+                    Node t = new Node();
+                    t.element = n.element;
+                    t.prev = newSet.rear;
+                    newSet.rear.next = t;
+                    newSet.rear = t;
+                    newSet.size++;
+                    n = n.next;
+                    p = p.next;
+                    t = null;
+                }
+            }
+            if (p == null && n == null) {
+                done = true;
+            }
         }
+        //for (T setItem : s) {
+        //    this.add(setItem);
+        //}
+        //for (T thisItem : this) {
+        //   newSet.add(thisItem);
+        //}
         return newSet;
     }
 
@@ -368,9 +459,64 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
         if (s.isEmpty() || this.isEmpty()) {
             return newSet;
         }
-        for (T setItem : s) {
-            if (this.contains(setItem)) {
-                newSet.add(setItem);
+        Node n = this.front;
+        Node p = s.front;
+        boolean done = false;
+        boolean foundFirst = false;
+        boolean validFirst = false;
+        do {
+            while (n != null) {
+                if (n.element.equals(p.element)) {
+                    Node t = new Node();
+                    t.element = n.element;
+                    newSet.front = t;
+                    newSet.rear = t;
+                    newSet.size++;
+                    validFirst = true;
+                    foundFirst = true;
+                    n = n.next;
+                    break;
+                }
+                if (!validFirst) {
+                    n = n.next;
+                }
+            }
+            if (n == null) {
+                return newSet;
+            }
+        } while (!foundFirst);
+        while (!done) {
+            if (n != null) {
+                if (p == null) {
+                    break;
+                }
+                if (n.element.compareTo(p.element) > 0) {
+                    p = p.next;
+                    continue;
+                }
+                if (n.element.compareTo(p.element) < 0) {
+                    n = n.next;
+                    continue;
+                }
+                if (n.element.equals(p.element)) {
+                    Node t = new Node();
+                    t.element = n.element;
+                    t.prev = newSet.rear;
+                    newSet.rear.next = t;
+                    newSet.rear = t;
+                    newSet.size++;
+                    n = n.next;
+                    p = p.next;
+                    t = null;
+                }
+            }
+            if (p != null) {
+                if (n == null) {
+                    break;
+                }
+            }
+            if (p == null && n == null) {
+                done = true;
             }
         }
         return newSet;
@@ -418,10 +564,26 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
         if (this.isEmpty()) {
             return newSet;
         }
-        for (T thisItem : this) {
-            if (!s.contains(thisItem)) {
-                newSet.add(thisItem);
+        Node n = this.front;
+        while (n != null) {
+            if (!s.contains(n.element)) {
+                if (newSet.isEmpty()) {
+                    Node t = new Node();
+                    t.element = n.element;
+                    newSet.front = t;
+                    newSet.rear = t;
+                    t = null;
+                } else {
+                    Node t = new Node();
+                    t.element = n.element;
+                    t.prev = newSet.rear;
+                    newSet.rear.next = t;
+                    newSet.rear = t;
+                    t = null;
+                }
+                newSet.size++;
             }
+            n = n.next;
         }
         return newSet;
     }
