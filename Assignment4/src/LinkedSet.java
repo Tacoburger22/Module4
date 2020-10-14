@@ -42,8 +42,6 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
         mySet.add(1);
         mySet.add(2);
         mySet.add(3);
-        //mySet.add(7);
-        //mySet.add(-1);
         if (mySet.contains(11)) {
             System.out.println("Found it!");
             System.out.println(mySet.toString());
@@ -51,12 +49,12 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
             System.out.println("Didn't find it!");
         }
         LinkedSet mySecondSet = new LinkedSet();
-        //mySecondSet.add(2);
-        //mySecondSet.add(6);
+        mySecondSet.add(2);
+        mySecondSet.add(6);
         mySecondSet.add(3);
         mySecondSet.add(4);
         mySecondSet.add(2);
-        //mySecondSet.add(-2);
+        mySecondSet.add(-2);
         if (mySet.equals(mySecondSet)) {
             System.out.println("Hooray!");
         }
@@ -464,6 +462,7 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
         boolean done = false;
         boolean foundFirst = false;
         boolean validFirst = false;
+        boolean runThroughP = false;
         do {
             while (n != null) {
                 if (n.element.equals(p.element)) {
@@ -481,10 +480,41 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
                     n = n.next;
                 }
             }
-            if (n == null) {
-                return newSet;
+            if (n == null && !foundFirst) {
+                n = this.front;
             }
-        } while (!foundFirst);
+            do {
+                if (!foundFirst) { //run through one more time, this time searching p for first element
+                    if (n.element.equals(p.element)) {
+                        Node t = new Node();
+                        t.element = n.element;
+                        newSet.front = t;
+                        newSet.rear = t;
+                        newSet.size++;
+                        validFirst = true;
+                        foundFirst = true;
+                        n = n.next;
+                        p = p.next;
+                        runThroughP = true;
+                        break;
+                    }
+                    if (!validFirst) {
+                        if (p.element.compareTo(n.element) > 0) {
+                            n = n.next;
+                        } else {
+                            p = p.next;
+                        }
+                    }
+                    if (p == null) {
+                        runThroughP = true;
+                        break;
+                    }
+                }
+                if (n == null || p == null) {
+                    return newSet;
+                }
+            }   while (!foundFirst);
+        } while (!foundFirst && !runThroughP);
         while (!done) {
             if (n != null) {
                 if (p == null) {
@@ -661,9 +691,10 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
     }
 
     private class powerSetIterator implements Iterator<Set<T>> {
-        private final double MAX_SETS = Math.pow(2, size);
+        private final int MAX_SETS = (int) Math.pow(2, size);
         private int current = 0;
-        private final LinkedSet<T> linkedSet = new LinkedSet<>();
+        private int currentBit = 0;
+        private Node n = front;
 
         @Override
         public boolean hasNext() {
@@ -672,11 +703,22 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
 
         @Override
         public Set<T> next() {
+            Set<T> mySet = new LinkedSet<>();
             if (isEmpty()) {
                 current++;
-                return linkedSet;
+                return mySet;
             }
-            return null;
+            int bitComplement = 1;
+            for (int i = 0; i < size; i++) {
+                if ((currentBit & bitComplement) != 0) {
+                    mySet.add(n.element);
+                }
+                n = n.next;
+            }
+            current++;
+            currentBit = 0;
+            n = front;
+            return mySet;
         }
     }
 
