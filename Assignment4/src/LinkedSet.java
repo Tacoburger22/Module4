@@ -1,3 +1,5 @@
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -10,18 +12,21 @@ import java.util.Iterator;
  *
  * @author Isaac Weiss (icw0001@auburn.edu)
  * @version 2020-10-10
- *
  */
 public class LinkedSet<T extends Comparable<T>> implements Set<T> {
     //////////////////////////////////////////////////////////
     // Do not change the following three fields in any way. //
     //////////////////////////////////////////////////////////
 
-    /** References to the first and last node of the list. */
+    /**
+     * References to the first and last node of the list.
+     */
     Node front;
     Node rear;
 
-    /** The number of nodes in the list. */
+    /**
+     * The number of nodes in the list.
+     */
     int size;
 
     /////////////////////////////////////////////////////////
@@ -37,7 +42,11 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
         size = 0;
     }
 
-    /**public static void main(String[] args) {
+    private LinkedSet<T> getSet() {
+        return this;
+    }
+
+    public static void main(String[] args) {
         LinkedSet mySet = new LinkedSet();
         mySet.add(1);
         mySet.add(2);
@@ -66,7 +75,16 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
         System.out.println("My intersection set: " + intersectionSet);
         LinkedSet complementSet = (LinkedSet) mySet.complement(mySecondSet);
         System.out.println("My complement set: " + complementSet);
-    }*/
+        LinkedSet<Integer> set = new LinkedSet<Integer>();
+        set.add(4);
+        set.add(6);
+        set.add(2);
+        Iterator<Set<Integer>> psIterator = set.powerSetIterator();
+        System.out.println("My power set: ");
+        while (psIterator.hasNext()) {
+            System.out.println(psIterator.next());
+        }
+    }
 
     //////////////////////////////////////////////////
     // Public interface and class-specific methods. //
@@ -75,6 +93,7 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
     ///////////////////////////////////////
     // DO NOT CHANGE THE TOSTRING METHOD //
     ///////////////////////////////////////
+
     /**
      * Return a string representation of this LinkedSet.
      *
@@ -98,10 +117,11 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
     ///////////////////////////////////
     // DO NOT CHANGE THE SIZE METHOD //
     ///////////////////////////////////
+
     /**
      * Returns the current size of this collection.
      *
-     * @return  the number of elements in this collection.
+     * @return the number of elements in this collection.
      */
     public int size() {
         return size;
@@ -110,10 +130,11 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
     //////////////////////////////////////
     // DO NOT CHANGE THE ISEMPTY METHOD //
     //////////////////////////////////////
+
     /**
      * Tests to see if this collection is empty.
      *
-     * @return  true if this collection contains no elements, false otherwise.
+     * @return true if this collection contains no elements, false otherwise.
      */
     public boolean isEmpty() {
         return (size == 0);
@@ -124,7 +145,7 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
      * nor null values are allowed. This method ensures that the elements in the
      * linked list are maintained in ascending natural order.
      *
-     * @param  element  The element whose presence is to be ensured.
+     * @param element The element whose presence is to be ensured.
      * @return true if collection is changed, false otherwise.
      */
     public boolean add(T element) {
@@ -171,8 +192,8 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
      * that the elements in the linked lists are maintained in ascending
      * natural order.
      *
-     * @param   element  The element to be removed.
-     * @return  true if collection is changed, false otherwise.
+     * @param element The element to be removed.
+     * @return true if collection is changed, false otherwise.
      */
     public boolean remove(T element) {
         if (element == null || isEmpty() || !contains(element)) {
@@ -207,8 +228,8 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
     /**
      * Searches for specified element in this collection.
      *
-     * @param   element  The element whose presence in this collection is to be tested.
-     * @return  true if this collection contains the specified element, false otherwise.
+     * @param element The element whose presence in this collection is to be tested.
+     * @return true if this collection contains the specified element, false otherwise.
      */
     public boolean contains(T element) {
         Node nodeWalker = front;
@@ -226,8 +247,8 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
      * Returns true if this set contains exactly the same elements
      * as the parameter set, regardless of order.
      *
-     * @return  true if this set contains exactly the same elements as
-     *               the parameter set, false otherwise
+     * @return true if this set contains exactly the same elements as
+     * the parameter set, false otherwise
      */
     public boolean equals(Set<T> s) {
         if (s == null || s.size() != this.size()) {
@@ -260,8 +281,8 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
      * Returns true if this set contains exactly the same elements
      * as the parameter set, regardless of order.
      *
-     * @return  true if this set contains exactly the same elements as
-     *               the parameter set, false otherwise
+     * @return true if this set contains exactly the same elements as
+     * the parameter set, false otherwise
      */
     public boolean equals(LinkedSet<T> s) {
         String toString = this.toString();
@@ -271,9 +292,9 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
     /**
      * Returns a set that is the union of this set and the parameter set.
      *
-     * @return  a set that contains all the elements of this set and the parameter set
+     * @return a set that contains all the elements of this set and the parameter set
      */
-    public Set<T> union(Set<T> s){
+    public Set<T> union(Set<T> s) {
         LinkedSet<T> newSet = new LinkedSet<>();
         if (s == null) {
             return null;
@@ -296,9 +317,9 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
     /**
      * Returns a set that is the union of this set and the parameter set.
      *
-     * @return  a set that contains all the elements of this set and the parameter set
+     * @return a set that contains all the elements of this set and the parameter set
      */
-    public Set<T> union(LinkedSet<T> s){
+    public Set<T> union(LinkedSet<T> s) {
         LinkedSet<T> newSet = new LinkedSet<>();
         if (s == null) {
             return null;
@@ -360,7 +381,7 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
                     n = n.next;
                     t = null;
                 }
-                if (p != null && n!= null && p.element.equals(n.element)) {
+                if (p != null && n != null && p.element.equals(n.element)) {
                     Node t = new Node();
                     t.element = n.element;
                     t.prev = newSet.rear;
@@ -424,7 +445,7 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
     /**
      * Returns a set that is the intersection of this set and the parameter set.
      *
-     * @return  a set that contains elements that are in both this set and the parameter set
+     * @return a set that contains elements that are in both this set and the parameter set
      */
     public Set<T> intersection(Set<T> s) {
         LinkedSet<T> newSet = new LinkedSet<>();
@@ -446,8 +467,8 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
      * Returns a set that is the intersection of this set and
      * the parameter set.
      *
-     * @return  a set that contains elements that are in both
-     *            this set and the parameter set
+     * @return a set that contains elements that are in both
+     * this set and the parameter set
      */
     public Set<T> intersection(LinkedSet<T> s) {
         LinkedSet<T> newSet = new LinkedSet<>();
@@ -513,7 +534,7 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
                 if (n == null || p == null) {
                     return newSet;
                 }
-            }   while (!foundFirst);
+            } while (!foundFirst);
         } while (!foundFirst && !runThroughP);
         while (!done) {
             if (n != null) {
@@ -555,7 +576,7 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
     /**
      * Returns a set that is the complement of this set and the parameter set.
      *
-     * @return  a set that contains elements that are in this set but not the parameter set
+     * @return a set that contains elements that are in this set but not the parameter set
      */
     public Set<T> complement(Set<T> s) {
         LinkedSet<T> newSet = new LinkedSet<>();
@@ -580,8 +601,8 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
      * Returns a set that is the complement of this set and
      * the parameter set.
      *
-     * @return  a set that contains elements that are in this
-     *            set but not the parameter set
+     * @return a set that contains elements that are in this
+     * set but not the parameter set
      */
     public Set<T> complement(LinkedSet<T> s) {
         LinkedSet<T> newSet = new LinkedSet<>();
@@ -622,7 +643,7 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
      * Returns an iterator over the elements in this LinkedSet.
      * Elements are returned in ascending natural order.
      *
-     * @return  an iterator over the elements in this LinkedSet
+     * @return an iterator over the elements in this LinkedSet
      */
     public Iterator<T> iterator() {
         return new ascendingIterator();
@@ -653,7 +674,7 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
      * Returns an iterator over the elements in this LinkedSet.
      * Elements are returned in descending natural order.
      *
-     * @return  an iterator over the elements in this LinkedSet
+     * @return an iterator over the elements in this LinkedSet
      */
     public Iterator<T> descendingIterator() {
         return new descendingIterator();
@@ -684,7 +705,7 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
      * Returns an iterator over the members of the power set
      * of this LinkedSet. No specific order can be assumed.
      *
-     * @return  an iterator over members of the power set
+     * @return an iterator over members of the power set
      */
     public Iterator<Set<T>> powerSetIterator() {
         return new powerSetIterator();
@@ -693,7 +714,7 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
     private class powerSetIterator implements Iterator<Set<T>> {
         private final int MAX_SETS = (int) Math.pow(2, size);
         private int current = 0;
-        private int currentBit = 0;
+        private String currentString = Integer.toBinaryString(0);
         private Node n = front;
 
         @Override
@@ -704,20 +725,21 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
         @Override
         public Set<T> next() {
             Set<T> mySet = new LinkedSet<>();
-            if (isEmpty()) {
+            n = front;
+            if (current == 0) {
                 current++;
                 return mySet;
             }
-            int bitComplement = 1;
-            for (int i = 0; i < size; i++) {
-                if ((currentBit & bitComplement) != 0) {
-                    mySet.add(n.element);
+            currentString = Integer.toBinaryString(current);
+                for (int i = currentString.length()-1; i >= 0; i--) {
+                    if (currentString.charAt(i) == '1') {
+                        mySet.add(n.element);
+                    }
+                    if (n != null) {
+                        n = n.next;
+                    }
                 }
-                n = n.next;
-            }
             current++;
-            currentBit = 0;
-            n = front;
             return mySet;
         }
     }
@@ -740,11 +762,17 @@ public class LinkedSet<T extends Comparable<T>> implements Set<T> {
      * Defines a node class for a doubly-linked list.
      */
     class Node {
-        /** the value stored in this node. */
+        /**
+         * the value stored in this node.
+         */
         T element;
-        /** a reference to the node after this node. */
+        /**
+         * a reference to the node after this node.
+         */
         Node next;
-        /** a reference to the node before this node. */
+        /**
+         * a reference to the node before this node.
+         */
         Node prev;
 
         /**
